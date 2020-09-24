@@ -8,6 +8,7 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 db_ip = os.environ.get("db_ip")
+db_port = os.environ.get("db_port")
 db_username = os.environ.get("db_username")
 db_pass = os.environ.get("db_pass")
 db_name = os.environ.get("db_name")
