@@ -85,7 +85,7 @@ class Database:
         :return: (dict)
         """
         res = {
-            "result": None,
+            "result": None
         }
         try:
             collection = self.__dbConn[colName]
@@ -114,5 +114,22 @@ class Database:
             res.count = count
         except Exception as e:
             res.result = "exception"
+        finally:
+            return res
+
+    def exist(self, colName, query: str):
+        """
+        Check if specific document is in database
+        :param colName: (str) collection name
+        :param query: (dict) query
+        :return: (Bool)
+        """
+        res = None
+        try:
+            collection = self.__dbConn[colName]
+            count = collection.count_documents(filter=query)
+            res = True if count > 0 else False
+        except Exception as e:
+            res = False
         finally:
             return res
