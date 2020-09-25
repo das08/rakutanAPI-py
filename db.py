@@ -7,15 +7,15 @@ class Database:
     __dbPort = env.db_port
     __dbUsername = env.db_username
     __dbPass = env.db_pass
+    __dbName = env.db_name
     __dbClient = None
     __dbConn = None
 
-    def __init__(self, db_name):
+    def __init__(self):
         """
         Initialization of Database
-        :param db_name: (str) database name
         """
-        self.__dbName = db_name
+        self.connect()
 
     def connect(self):
         """
