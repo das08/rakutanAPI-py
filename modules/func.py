@@ -63,3 +63,23 @@ def get_lecture_by_search_word(search_word):
         res.result = response[2001].format(search_word)
 
     return res
+
+
+def get_user_data(uid):
+    pass
+
+
+def get_kakomon_merge_list():
+    pass
+
+
+def get_omikuji(omikujiType):
+    pass
+
+
+def add_users(uid):
+    pass
+
+
+def update_users(uid):
+    pass
