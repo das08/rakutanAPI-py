@@ -128,7 +128,7 @@ class Database:
         try:
             collection = self.__dbConn[colName]
             count = collection.count_documents(filter=query)
-            res = True if count > 0 else False
+            res = count > 0
         except Exception as e:
             res = False
         finally:
