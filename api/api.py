@@ -31,7 +31,6 @@ def get_lecture_by_search_word(search_word=None):
 
 # 指定したユーザー(uid)のお気に入りを取得する
 @app.route('/users/fav/<uid>', methods=['GET'])
-# kid: 講義ID
 def get_users_favorite(uid=None):
     res = fn.get_user_favorite(uid)
     if res.result == "success":
@@ -45,20 +44,18 @@ def get_users_favorite(uid=None):
 
 # 指定したユーザー(uid)のお気に入りを作成する
 @app.route('/users/fav', methods=['POST'])
-# kid: 講義ID
 def add_users_favorite():
     return jsonify()
 
 
 # 指定したユーザー(uid)のお気に入りを削除する
 @app.route('/users/fav/<uid>', methods=['DELETE'])
-# kid: 講義ID
 def delete_users_favorite(uid=None):
     return jsonify(uid)
 
+
 # 指定したユーザー(uid)のお気に入りを取得する
 @app.route('/omikuji/<omikujiType>', methods=['GET'])
-# kid: 講義ID
 def get_omikuji(omikujiType=None):
     res = fn.get_omikuji(omikujiType)
     if res.result == "success":
@@ -69,14 +66,12 @@ def get_omikuji(omikujiType=None):
 
 # 指定した講義ID(kid)の過去問リンクを許可待ちリストに追加する
 @app.route('/kakomon', methods=['POST'])
-# kid: 講義ID
 def add_kakomon():
     return jsonify()
 
 
 # 指定した講義ID(kid)の過去問リンクを許可待ちリストから削除する
 @app.route('/kakomon/<kid>', methods=['DELETE'])
-# kid: 講義ID
 def delete_kakomon(kid=None):
     return jsonify(kid)
 
