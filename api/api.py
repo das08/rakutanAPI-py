@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 import modules.func as fn
-from models import Rakutan, UserFav
+from models import Rakutan, UserFav, Kakomon
 
 app = Blueprint('api', __name__, url_prefix='/api')
 
@@ -72,6 +72,19 @@ def get_omikuji(omikujiType=None):
     res = fn.get_omikuji(omikujiType)
     if res.result == "success":
         return Rakutan.to_dict(res.rakutan)
+    else:
+        return res.result
+
+
+# 提供された過去問リンク一覧を取得する
+@app.route('/kakomon', methods=['GET'])
+def get_kakomon():
+    res = fn.get_kakomon_merge_list()
+    if res.result == "success":
+        tmp = []
+        for kakomon in res.kakomonList:
+            tmp.append(Kakomon.to_dict(kakomon))
+        return {"kakomonList": tmp, "kakomonCount": res.count}
     else:
         return res.result
 

@@ -1,6 +1,6 @@
 import random
 from db import Database as DB
-from models import Rakutan, UserFav
+from models import Rakutan, UserFav, Kakomon
 from modules.DotDict import DotDict
 from modules.reserved import responseMessages as response
 
@@ -144,7 +144,32 @@ def get_omikuji(omikujiType):
 
 
 def get_kakomon_merge_list():
-    pass
+    """
+    Get provided kakomon list.
+    :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
+    And if success -> "favList" will hold UserFav objects list.
+    """
+    db = DB()
+    query = {'search_id': {'$ne': ''}}
+    result, count, queryResult = unpack(**db.find('urlmerge', query))
+
+    res = DotDict({
+        "result": None,
+        "count": None,
+        "kakomonList": None
+    })
+
+    if result == "success":
+        if count == 0:
+            res.result = response[5404]
+        else:
+            res.result = "success"
+            res.count = count
+            res.kakomonList = Kakomon.from_list(queryResult)
+    else:
+        res.result = response[5001].format(uid)
+
+    return res
 
 
 def add_user_favorite(uid, lecID, lectureName):
