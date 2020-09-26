@@ -43,7 +43,7 @@ def get_lecture_by_search_word(search_word):
     Find rakutan info from search word.
     :param search_word: (str) search word
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
-    And if success -> "rakrakutanListutan" will hold Rakutan objects list.
+    And if success -> "rakutanList" will hold Rakutan objects list.
     """
     db = DB()
 
@@ -147,7 +147,7 @@ def get_kakomon_merge_list():
     """
     Get provided kakomon list.
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
-    And if success -> "favList" will hold UserFav objects list.
+    And if success -> "kakomonList" will hold Kakomon objects list.
     """
     db = DB()
     query = {'search_id': {'$ne': ''}}
@@ -179,7 +179,7 @@ def add_user_favorite(uid, lecID, lectureName):
     :param lecID: (int) lecture ID
     :param lectureName: (str) lecture name
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
-    And if success -> "favList" will hold UserFav objects list.
+    And if success -> "successMsg" will hold succcess message string.
     """
     db = DB()
 
@@ -210,7 +210,7 @@ def delete_user_favorite(uid, lecID):
     :param uid: (str) user's LINE UID
     :param lecID: (int) lecture ID
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
-    And if success -> "favList" will hold UserFav objects list.
+    And if success -> "successMsg" will hold succcess message string.
     """
     db = DB()
 
