@@ -57,9 +57,13 @@ def add_users_favorite():
 
 
 # 指定したユーザー(uid)のお気に入りを削除する
-@app.route('/users/fav/<uid>', methods=['DELETE'])
-def delete_users_favorite(uid=None):
-    return jsonify(uid)
+@app.route('/users/fav/<uid>/<int:lecID>', methods=['DELETE'])
+def delete_users_favorite(uid=None, lecID=None):
+    res = fn.delete_user_favorite(uid, lecID)
+    if res.result == "success":
+        return res.successMsg
+    else:
+        return res.result
 
 
 # 指定したユーザー(uid)のお気に入りを取得する

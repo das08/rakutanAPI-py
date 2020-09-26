@@ -179,6 +179,39 @@ def add_user_favorite(uid, lecID, lectureName):
     return res
 
 
+def delete_user_favorite(uid, lecID):
+    """
+    Delete user's favorite.
+    :param uid: (str) user's LINE UID
+    :param lecID: (int) lecture ID
+    :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
+    And if success -> "favList" will hold UserFav objects list.
+    """
+    db = DB()
+
+    res = DotDict({
+        "result": None,
+        "successMsg": None
+    })
+
+    if not db.exist('userfav', {'$and': [{'uid': uid}, {'lectureid': int(lecID)}]}):
+        res.result = response[3408].format(lecID)
+        return res
+
+    query = {'$and': [{'uid': uid}, {'lectureid': int(lecID)}]}
+
+    result = db.delete('userfav', query).result
+    if result == "success":
+        res.result = "success"
+        res.successMsg = response[3407].format(uid, lecID)
+    elif result == "fail":
+        res.result = response[3409].format(lecID)
+    else:
+        res.result = response[3003].format(uid)
+
+    return res
+
+
 def add_users(uid):
     pass
 
