@@ -9,15 +9,15 @@ def unpack(result, count, queryResult):
     return result, count, queryResult
 
 
-def get_lecture_by_id(kid):
+def get_lecture_by_id(lecID):
     """
     Find rakutan info from lecture ID
-    :param kid: (int) kougi ID(lecture ID)
+    :param lecID: (int) kougi ID(lecture ID)
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
     And if success -> "rakutan" will hold a Rakutan object.
     """
     db = DB()
-    query = {'id': int(kid)}
+    query = {'id': int(lecID)}
     # result, count, queryResult = db.find('rakutan', query)
     result, count, queryResult = unpack(**db.find('rakutan', query))
 
@@ -28,12 +28,12 @@ def get_lecture_by_id(kid):
 
     if result == "success":
         if count == 0:
-            res.result = response[1404].format(kid)
+            res.result = response[1404].format(lecID)
         else:
             res.result = "success"
             res.rakutan = Rakutan.from_dict(queryResult[0])
     else:
-        res.result = response[1001].format(kid)
+        res.result = response[1001].format(lecID)
 
     return res
 
@@ -144,6 +144,10 @@ def get_omikuji(omikujiType):
 
 
 def get_kakomon_merge_list():
+    pass
+
+
+def add_user_favorite(uid, lecID):
     pass
 
 

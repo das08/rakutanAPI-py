@@ -1,21 +1,21 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import modules.func as fn
 from models import Rakutan, UserFav
 
 app = Blueprint('api', __name__, url_prefix='/api')
 
 
-# 指定した講義ID(kid)のらくたん情報を取得する
-@app.route('/rakutan/<int:kid>', methods=['GET'])
-def get_lecture_by_id(kid=None):
-    res = fn.get_lecture_by_id(kid)
+# 指定した講義ID(lecID)のらくたん情報を取得する
+@app.route('/rakutan/<int:lecID>', methods=['GET'])
+def get_lecture_by_id(lecID=None):
+    res = fn.get_lecture_by_id(lecID)
     if res.result == "success":
         return Rakutan.to_dict(res.rakutan)
     else:
         return res.result
 
 
-# 指定した講義ID(kid)のらくたん情報を取得する
+# 指定した講義ID(lecID)のらくたん情報を取得する
 @app.route('/rakutan/search/<search_word>', methods=['GET'])
 def get_lecture_by_search_word(search_word=None):
     search_word = search_word.strip().replace('％', '%')
@@ -45,7 +45,9 @@ def get_users_favorite(uid=None):
 # 指定したユーザー(uid)のお気に入りを作成する
 @app.route('/users/fav', methods=['POST'])
 def add_users_favorite():
-    return jsonify()
+    uid = request.form.get('uid')
+    lecID = request.form.get('lecID')
+    return "ok"
 
 
 # 指定したユーザー(uid)のお気に入りを削除する
@@ -64,16 +66,16 @@ def get_omikuji(omikujiType=None):
         return res.result
 
 
-# 指定した講義ID(kid)の過去問リンクを許可待ちリストに追加する
+# 指定した講義ID(lecID)の過去問リンクを許可待ちリストに追加する
 @app.route('/kakomon', methods=['POST'])
 def add_kakomon():
     return jsonify()
 
 
-# 指定した講義ID(kid)の過去問リンクを許可待ちリストから削除する
-@app.route('/kakomon/<kid>', methods=['DELETE'])
-def delete_kakomon(kid=None):
-    return jsonify(kid)
+# 指定した講義ID(lecID)の過去問リンクを許可待ちリストから削除する
+@app.route('/kakomon/<lecID>', methods=['DELETE'])
+def delete_kakomon(lecID=None):
+    return jsonify(lecID)
 
 
 @app.errorhandler(404)
