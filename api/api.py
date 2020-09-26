@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify
+import modules.func as fn
+from models import Rakutan
 
 app = Blueprint('api', __name__, url_prefix='/api')
 
@@ -6,14 +8,25 @@ app = Blueprint('api', __name__, url_prefix='/api')
 # 指定した講義ID(kid)のらくたん情報を取得する
 @app.route('/rakutan/<int:kid>', methods=['GET'])
 def get_lecture_by_id(kid=None):
-    return jsonify(kid)
+    res = fn.get_lecture_by_id(kid)
+    if res.result == "success":
+        return Rakutan.to_dict(res.rakutan)
+    else:
+        return res.result
 
 
 # 指定した講義ID(kid)のらくたん情報を取得する
 @app.route('/rakutan/search/<search_word>', methods=['GET'])
 def get_lecture_by_search_word(search_word=None):
     search_word = search_word.strip().replace('％', '%')
-    return jsonify(search_word)
+    res = fn.get_lecture_by_search_word(search_word)
+    if res.result == "success":
+        tmp = []
+        for rakutan in res.rakutanList:
+            tmp.append(Rakutan.to_dict(rakutan))
+        return {"searchResult": tmp, "searchCount": res.count}
+    else:
+        return res.result
 
 
 # 指定したユーザー(uid)の情報を取得する
