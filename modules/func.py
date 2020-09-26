@@ -1,6 +1,11 @@
 from db import Database as DB
 from models import Rakutan
+from modules.DotDict import DotDict
 from modules.reserved import responseMessages as response
+
+
+def unpack(result, count, queryResult):
+    return result, count, queryResult
 
 
 def get_lecture_by_id(kid):
@@ -12,12 +17,13 @@ def get_lecture_by_id(kid):
     """
     db = DB()
     query = {'id': int(kid)}
-    result, count, queryResult = db.find('rakutan', query)
+    # result, count, queryResult = db.find('rakutan', query)
+    result, count, queryResult = unpack(**db.find('rakutan', query))
 
-    res = {
+    res = DotDict({
         "result": None,
         "rakutan": None
-    }
+    })
 
     if result == "success":
         if count == 0:

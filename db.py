@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import setting as env
+from modules.DotDict import DotDict
 
 
 class Database:
@@ -39,11 +40,11 @@ class Database:
         :param projection: (option) (dict) options to specify field
         :return: (dict)
         """
-        res = {
+        res = DotDict({
             "result": None,
             "count": None,
             "queryResult": None
-        }
+        })
         try:
             collection = self.__dbConn[colName]
             queryResults = collection.find(filter=query, projection=projection)
@@ -63,10 +64,10 @@ class Database:
         :param query: (dict) query
         :return: (dict)
         """
-        res = {
+        res = DotDict({
             "result": None,
             "count": None,
-        }
+        })
         try:
             collection = self.__dbConn[colName]
             count = collection.find_one_and_update(query)['count']
@@ -84,9 +85,9 @@ class Database:
         :param document: (dict) document
         :return: (dict)
         """
-        res = {
+        res = DotDict({
             "result": None
-        }
+        })
         try:
             collection = self.__dbConn[colName]
             count = collection.insert_one(document)
@@ -103,10 +104,10 @@ class Database:
         :param query: (dict) query
         :return: (dict)
         """
-        res = {
+        res = DotDict({
             "result": None,
             "count": None,
-        }
+        })
         try:
             collection = self.__dbConn[colName]
             count = collection.delete_one(query).deleted_count
