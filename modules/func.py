@@ -52,18 +52,21 @@ def get_lecture_by_search_word(search_word):
     else:
         query = {'lecturename': {'$regex': f'^{search_word}', '$options': 'i'}}
 
-    result, count, queryResult = db.find('rakutan', query, projection={'_id': False})
+    # result, count, queryResult = db.find('rakutan', query, projection={'_id': False})
+    result, count, queryResult = unpack(**db.find('rakutan', query, projection={'_id': False}))
 
-    res = {
+    res = DotDict({
         "result": None,
+        "count": None,
         "rakutanList": None
-    }
+    })
 
     if result == "success":
         if count == 0:
             res.result = response[2404].format(search_word)
         else:
             res.result = "success"
+            res.count = count
             res.rakutanList = Rakutan.from_list(queryResult)
     else:
         res.result = response[2001].format(search_word)
