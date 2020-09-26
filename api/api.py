@@ -88,6 +88,12 @@ def delete_kakomon(lecID=None):
     return jsonify(lecID)
 
 
+# 統計用
+@app.route('/users/count/<countType>', methods=['PUT'])
+def update_counter(countType=None):
+    return jsonify()
+
+
 @app.errorhandler(404)
 def error_handler(error):
     return jsonify({'error': {
