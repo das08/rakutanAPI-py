@@ -56,6 +56,16 @@ def add_users_favorite():
 def delete_users_favorite(uid=None):
     return jsonify(uid)
 
+# 指定したユーザー(uid)のお気に入りを取得する
+@app.route('/omikuji/<omikujiType>', methods=['GET'])
+# kid: 講義ID
+def get_omikuji(omikujiType=None):
+    res = fn.get_omikuji(omikujiType)
+    if res.result == "success":
+        return Rakutan.to_dict(res.rakutan)
+    else:
+        return res.result
+
 
 # 指定した講義ID(kid)の過去問リンクを許可待ちリストに追加する
 @app.route('/kakomon', methods=['POST'])

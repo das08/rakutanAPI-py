@@ -1,3 +1,4 @@
+import random
 from db import Database as DB
 from models import Rakutan, UserFav
 from modules.DotDict import DotDict
@@ -42,7 +43,7 @@ def get_lecture_by_search_word(search_word):
     Find rakutan info from search word.
     :param search_word: (str) search word
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
-    And if success -> "rakutan" will hold a Rakutan object.
+    And if success -> "rakrakutanListutan" will hold Rakutan objects list.
     """
     db = DB()
 
@@ -79,7 +80,7 @@ def get_user_favorite(uid):
     Get user's favorite.
     :param uid: (str) user's LINE UID
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
-    And if success -> "rakutan" will hold a Rakutan object.
+    And if success -> "favList" will hold UserFav objects list.
     """
     db = DB()
     query = {'uid': uid}
@@ -104,11 +105,45 @@ def get_user_favorite(uid):
     return res
 
 
-def get_kakomon_merge_list():
-    pass
-
-
 def get_omikuji(omikujiType):
+    """
+    Get omikuji.
+    :param omikujiType: (str) omikuji type. ["normal", "oni"]
+    :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
+    And if success -> "rakutan" will hold a Rakutan object.
+    """
+    db = DB()
+
+    res = DotDict({
+        "result": None,
+        "rakutan": None
+    })
+
+    if omikujiType == "oni":
+        query = {'$and': [{'facultyname': '国際高等教育院'}, {'total_prev': {'$gt': 4}},
+                          {'$expr': {'$lt': ['$accept_prev', {'$multiply': [0.31, '$total_prev']}]}}]}
+    elif omikujiType == "normal":
+        query = {'$and': [{'facultyname': '国際高等教育院'}, {'accept_prev': {'$gt': 15}},
+                          {'$expr': {'$gt': ['$accept_prev', {'$multiply': [0.8, '$total_prev']}]}}]}
+    else:
+        res.result = response[4002].format(omikujiType)
+        return res
+
+    result, count, queryResult = unpack(**db.find('rakutan', query))
+
+    if result == "success":
+        if count == 0:
+            res.result = response[4404].format(omikujiType)
+        else:
+            res.result = "success"
+            res.rakutan = random.choice(Rakutan.from_list(queryResult))
+    else:
+        res.result = response[4001].format(omikujiType)
+
+    return res
+
+
+def get_kakomon_merge_list():
     pass
 
 
