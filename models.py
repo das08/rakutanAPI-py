@@ -70,9 +70,9 @@ class UserFav:
         )
 
     @classmethod
-    def from_list(cls, dbUserFavDict: list):
+    def from_list(cls, dbUserFavList: list):
         userFavList = []
-        for fav in dbUserFavDict:
+        for fav in dbUserFavList:
             userFavList.append(cls.from_dict(fav))
         return userFavList
 
