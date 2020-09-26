@@ -12,7 +12,7 @@ def unpack(result, count, queryResult):
 def get_lecture_by_id(lecID):
     """
     Find rakutan info from lecture ID
-    :param lecID: (int) kougi ID(lecture ID)
+    :param lecID: (int) lecture ID
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
     And if success -> "rakutan" will hold a Rakutan object.
     """
@@ -147,8 +147,36 @@ def get_kakomon_merge_list():
     pass
 
 
-def add_user_favorite(uid, lecID):
-    pass
+def add_user_favorite(uid, lecID, lectureName):
+    """
+    Add user's favorite.
+    :param uid: (str) user's LINE UID
+    :param lecID: (int) lecture ID
+    :param lectureName: (str) lecture name
+    :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
+    And if success -> "favList" will hold UserFav objects list.
+    """
+    db = DB()
+
+    res = DotDict({
+        "result": None,
+        "successMsg": None
+    })
+
+    if db.exist('userfav', {'$and': [{'uid': uid}, {'lectureid': int(lecID)}]}):
+        res.result = response[3405]
+        return res
+
+    query = {'uid': uid, 'lectureid': int(lecID), 'lecturename': lectureName}
+
+    result = db.insert('userfav', query).result
+    if result == "success":
+        res.result = "success"
+        res.successMsg = response[3406].format(uid, lectureName)
+    else:
+        res.result = response[3002].format(uid)
+
+    return res
 
 
 def add_users(uid):

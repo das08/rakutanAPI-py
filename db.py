@@ -118,7 +118,7 @@ class Database:
         finally:
             return res
 
-    def exist(self, colName, query: str):
+    def exist(self, colName, query: dict):
         """
         Check if specific document is in database
         :param colName: (str) collection name

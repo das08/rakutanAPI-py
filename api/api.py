@@ -45,9 +45,15 @@ def get_users_favorite(uid=None):
 # 指定したユーザー(uid)のお気に入りを作成する
 @app.route('/users/fav', methods=['POST'])
 def add_users_favorite():
-    uid = request.form.get('uid')
-    lecID = request.form.get('lecID')
-    return "ok"
+    uid = request.json.get('uid')
+    lecID = request.json.get('lecID')
+    lectureName = request.json.get('lectureName')
+
+    res = fn.add_user_favorite(uid, lecID, lectureName)
+    if res.result == "success":
+        return res.successMsg
+    else:
+        return res.result
 
 
 # 指定したユーザー(uid)のお気に入りを削除する
