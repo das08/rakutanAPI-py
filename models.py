@@ -82,3 +82,40 @@ class UserFav:
             'lecID': self.lecID,
             'lectureName': self.lectureName,
         }
+
+
+class Kakomon:
+    uid = None
+    lecID = None
+    url = None
+    sendTime = None
+
+    def __init__(self, uid, lecID, u, sT):
+        self.uid: str = uid
+        self.lecID: int = lecID
+        self.url: str = u
+        self.sendTime: str = sT
+
+    @classmethod
+    def from_dict(cls, dbKakomonDict: dict):
+        return Kakomon(
+            uid=dbKakomonDict['uid'],
+            lecID=dbKakomonDict['search_id'],
+            u=dbKakomonDict['url'],
+            sT=dbKakomonDict['send_time']
+        )
+
+    @classmethod
+    def from_list(cls, dbKakomonList: list):
+        kakomonList = []
+        for kakomon in dbKakomonList:
+            kakomonList.append(cls.from_dict(kakomon))
+        return kakomonList
+
+    def to_dict(self):
+        return {
+            'uid': self.uid,
+            'lecID': self.lecID,
+            'url': self.url,
+            'sendTime': self.sendTime
+        }
