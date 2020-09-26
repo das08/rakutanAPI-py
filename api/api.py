@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 import modules.func as fn
-from models import Rakutan
+from models import Rakutan, UserFav
 
 app = Blueprint('api', __name__, url_prefix='/api')
 
@@ -29,24 +29,31 @@ def get_lecture_by_search_word(search_word=None):
         return res.result
 
 
-# 指定したユーザー(uid)の情報を取得する
-@app.route('/users/<uid>', methods=['GET'])
+# 指定したユーザー(uid)のお気に入りを取得する
+@app.route('/users/fav/<uid>', methods=['GET'])
 # kid: 講義ID
-def get_users(uid=None):
-    return jsonify(uid)
+def get_users_favorite(uid=None):
+    res = fn.get_user_favorite(uid)
+    if res.result == "success":
+        tmp = []
+        for fav in res.favList:
+            tmp.append(UserFav.to_dict(fav))
+        return {"favList": tmp, "favCount": res.count}
+    else:
+        return res.result
 
 
-# 指定したユーザー(uid)の情報を作成する
-@app.route('/users', methods=['POST'])
+# 指定したユーザー(uid)のお気に入りを作成する
+@app.route('/users/fav', methods=['POST'])
 # kid: 講義ID
-def add_users():
+def add_users_favorite():
     return jsonify()
 
 
-# 指定したユーザー(uid)の情報を更新する
-@app.route('/users/<uid>', methods=['PUT'])
+# 指定したユーザー(uid)のお気に入りを削除する
+@app.route('/users/fav/<uid>', methods=['DELETE'])
 # kid: 講義ID
-def update_users(uid=None):
+def delete_users_favorite(uid=None):
     return jsonify(uid)
 
 
