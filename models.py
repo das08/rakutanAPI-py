@@ -49,3 +49,36 @@ class Rakutan:
             'total': self.total,
             'url': self.url
         }
+
+
+class UserFav:
+    uid = None
+    lecID = None
+    lectureName = None
+
+    def __init__(self, uid, lecID, lN):
+        self.uid: str = uid
+        self.lecID: int = lecID
+        self.lectureName: str = lN
+
+    @classmethod
+    def from_dict(cls, dbUserFavDict: dict):
+        return UserFav(
+            uid=dbUserFavDict['uid'],
+            lecID=dbUserFavDict['lectureid'],
+            lN=dbUserFavDict['lecturename']
+        )
+
+    @classmethod
+    def from_list(cls, dbUserFavDict: list):
+        userFavList = []
+        for fav in dbUserFavDict:
+            userFavList.append(cls.from_dict(fav))
+        return userFavList
+
+    def to_dict(self):
+        return {
+            'uid': self.uid,
+            'lecID': self.lecID,
+            'lectureName': self.lectureName,
+        }

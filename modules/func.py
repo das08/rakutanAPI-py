@@ -1,5 +1,5 @@
 from db import Database as DB
-from models import Rakutan
+from models import Rakutan, UserFav
 from modules.DotDict import DotDict
 from modules.reserved import responseMessages as response
 
@@ -74,8 +74,34 @@ def get_lecture_by_search_word(search_word):
     return res
 
 
-def get_user_data(uid):
-    pass
+def get_user_favorite(uid):
+    """
+    Get user's favorite.
+    :param uid: (str) user's LINE UID
+    :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
+    And if success -> "rakutan" will hold a Rakutan object.
+    """
+    db = DB()
+    query = {'uid': uid}
+    result, count, queryResult = unpack(**db.find('userfav', query))
+
+    res = DotDict({
+        "result": None,
+        "count": None,
+        "favList": None
+    })
+
+    if result == "success":
+        if count == 0:
+            res.result = response[3404].format(uid)
+        else:
+            res.result = "success"
+            res.count = count
+            res.favList = UserFav.from_list(queryResult)
+    else:
+        res.result = response[3001].format(uid)
+
+    return res
 
 
 def get_kakomon_merge_list():
