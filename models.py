@@ -13,7 +13,7 @@ class Rakutan:
         self.facultyName: str = fN
         self.lectureName: str = lN
         self.groups: str = g
-        self.credits: int = c
+        self.credits: str = c
         self.accepted: list = a
         self.total: list = t
         self.url: str = u
