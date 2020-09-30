@@ -21,12 +21,12 @@ class Rakutan:
     @classmethod
     def from_dict(cls, dbRakutanDict: dict):
         return Rakutan(
-            lecID=dbRakutanDict['id'],
-            fN=dbRakutanDict['facultyname'],
-            lN=dbRakutanDict['lecturename'],
+            lecID=dbRakutanDict['lecID'],
+            fN=dbRakutanDict['facultyName'],
+            lN=dbRakutanDict['lectureName'],
             g=dbRakutanDict['groups'],
             c=dbRakutanDict['credits'],
-            a=dbRakutanDict['accept'],
+            a=dbRakutanDict['accepted'],
             t=dbRakutanDict['total'],
             u=dbRakutanDict['url']
         )
