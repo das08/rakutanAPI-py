@@ -17,9 +17,9 @@ def get_lecture_by_id(lecID):
     And if success -> "rakutan" will hold a Rakutan object.
     """
     db = DB()
-    query = {'id': int(lecID)}
+    query = {'lecID': int(lecID)}
     # result, count, queryResult = db.find('rakutan', query)
-    result, count, queryResult = unpack(**db.find('rakutan', query))
+    result, count, queryResult = unpack(**db.find('rakutan2020', query))
 
     res = DotDict({
         "result": None,
@@ -49,12 +49,12 @@ def get_lecture_by_search_word(search_word):
 
     # if search word has % in first letter, partial match search will be performed
     if search_word[0] == '%':
-        query = {'lecturename': {'$regex': f'{search_word[1:]}', '$options': 'i'}}
+        query = {'lectureName': {'$regex': f'{search_word[1:]}', '$options': 'i'}}
     else:
-        query = {'lecturename': {'$regex': f'^{search_word}', '$options': 'i'}}
+        query = {'lectureName': {'$regex': f'^{search_word}', '$options': 'i'}}
 
     # result, count, queryResult = db.find('rakutan', query, projection={'_id': False})
-    result, count, queryResult = unpack(**db.find('rakutan', query, projection={'_id': False}))
+    result, count, queryResult = unpack(**db.find('rakutan2020', query, projection={'_id': False}))
 
     res = DotDict({
         "result": None,
@@ -120,16 +120,16 @@ def get_omikuji(omikujiType):
     })
 
     if omikujiType == "oni":
-        query = {'$and': [{'facultyname': '国際高等教育院'}, {'total_prev': {'$gt': 4}},
-                          {'$expr': {'$lt': ['$accept_prev', {'$multiply': [0.31, '$total_prev']}]}}]}
+        query = {'$and': [{'facultyName': '国際高等教育院'}, {'total.0': {'$gt': 4}},
+                          {'$expr': {'$lt': [{'$arrayElemAt': ['$accepted', 0]}, {'$multiply': [0.31, {'$arrayElemAt': ['$total', 0]}]}]}}]}
     elif omikujiType == "normal":
-        query = {'$and': [{'facultyname': '国際高等教育院'}, {'accept_prev': {'$gt': 15}},
-                          {'$expr': {'$gt': ['$accept_prev', {'$multiply': [0.8, '$total_prev']}]}}]}
+        query = {'$and': [{'facultyName': '国際高等教育院'}, {'accepted.0': {'$gt': 15}},
+                          {'$expr': {'$gt': [{'$arrayElemAt': ['$accepted', 0]}, {'$multiply': [0.8, {'$arrayElemAt': ['$total', 0]}]}]}}]}
     else:
         res.result = response[4002].format(omikujiType)
         return res
 
-    result, count, queryResult = unpack(**db.find('rakutan', query))
+    result, count, queryResult = unpack(**db.find('rakutan2020', query))
 
     if result == "success":
         if count == 0:
@@ -150,7 +150,7 @@ def get_kakomon_merge_list():
     And if success -> "kakomonList" will hold Kakomon objects list.
     """
     db = DB()
-    query = {'search_id': {'$ne': ''}}
+    query = {'lecID': {'$ne': ''}}
     result, count, queryResult = unpack(**db.find('urlmerge', query))
 
     res = DotDict({
@@ -188,11 +188,11 @@ def add_user_favorite(uid, lecID, lectureName):
         "successMsg": None
     })
 
-    if db.exist('userfav', {'$and': [{'uid': uid}, {'lectureid': int(lecID)}]}):
+    if db.exist('userfav', {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}):
         res.result = response[3405]
         return res
 
-    query = {'uid': uid, 'lectureid': int(lecID), 'lecturename': lectureName}
+    query = {'uid': uid, 'lecID': int(lecID), 'lectureName': lectureName}
 
     result = db.insert('userfav', query).result
     if result == "success":
@@ -219,11 +219,11 @@ def delete_user_favorite(uid, lecID):
         "successMsg": None
     })
 
-    if not db.exist('userfav', {'$and': [{'uid': uid}, {'lectureid': int(lecID)}]}):
+    if not db.exist('userfav', {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}):
         res.result = response[3408].format(lecID)
         return res
 
-    query = {'$and': [{'uid': uid}, {'lectureid': int(lecID)}]}
+    query = {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}
 
     result = db.delete('userfav', query).result
     if result == "success":
