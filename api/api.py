@@ -10,7 +10,7 @@ app = Blueprint('api', __name__, url_prefix='/api')
 def get_lecture_by_id(lecID=None):
     res = fn.get_lecture_by_id(lecID)
     if res.result == "success":
-        return Rakutan.to_dict(res.rakutan)
+        return jsonify(Rakutan.to_dict(res.rakutan))
     else:
         return res.result
 
@@ -24,7 +24,7 @@ def get_lecture_by_search_word(search_word=None):
         tmp = []
         for rakutan in res.rakutanList:
             tmp.append(Rakutan.to_dict(rakutan))
-        return {"searchResult": tmp, "searchCount": res.count}
+        return jsonify({"searchResult": tmp, "searchCount": res.count})
     else:
         return res.result
 
@@ -37,7 +37,7 @@ def get_users_favorite(uid=None):
         tmp = []
         for fav in res.favList:
             tmp.append(UserFav.to_dict(fav))
-        return {"favList": tmp, "favCount": res.count}
+        return jsonify({"favList": tmp, "favCount": res.count})
     else:
         return res.result
 
@@ -71,7 +71,7 @@ def delete_users_favorite(uid=None, lecID=None):
 def get_omikuji(omikujiType=None):
     res = fn.get_omikuji(omikujiType)
     if res.result == "success":
-        return Rakutan.to_dict(res.rakutan)
+        return jsonify(Rakutan.to_dict(res.rakutan))
     else:
         return res.result
 
@@ -84,7 +84,7 @@ def get_kakomon():
         tmp = []
         for kakomon in res.kakomonList:
             tmp.append(Kakomon.to_dict(kakomon))
-        return {"kakomonList": tmp, "kakomonCount": res.count}
+        return jsonify({"kakomonList": tmp, "kakomonCount": res.count})
     else:
         return res.result
 
