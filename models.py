@@ -26,8 +26,8 @@ class Rakutan:
             lN=dbRakutanDict['lecturename'],
             g=dbRakutanDict['groups'],
             c=dbRakutanDict['credits'],
-            a=[dbRakutanDict['accept_prev'], dbRakutanDict['accept_prev2'], dbRakutanDict['accept_prev3']],
-            t=[dbRakutanDict['total_prev'], dbRakutanDict['total_prev2'], dbRakutanDict['total_prev3']],
+            a=dbRakutanDict['accept'],
+            t=dbRakutanDict['total'],
             u=dbRakutanDict['url']
         )
 
@@ -54,19 +54,16 @@ class Rakutan:
 class UserFav:
     uid = None
     lecID = None
-    lectureName = None
 
-    def __init__(self, uid, lecID, lN):
+    def __init__(self, uid, lecID):
         self.uid: str = uid
         self.lecID: int = lecID
-        self.lectureName: str = lN
 
     @classmethod
     def from_dict(cls, dbUserFavDict: dict):
         return UserFav(
             uid=dbUserFavDict['uid'],
-            lecID=dbUserFavDict['lectureid'],
-            lN=dbUserFavDict['lecturename']
+            lecID=dbUserFavDict['lecID']
         )
 
     @classmethod
@@ -79,8 +76,7 @@ class UserFav:
     def to_dict(self):
         return {
             'uid': self.uid,
-            'lecID': self.lecID,
-            'lectureName': self.lectureName,
+            'lecID': self.lecID
         }
 
 
@@ -100,9 +96,9 @@ class Kakomon:
     def from_dict(cls, dbKakomonDict: dict):
         return Kakomon(
             uid=dbKakomonDict['uid'],
-            lecID=dbKakomonDict['search_id'],
+            lecID=dbKakomonDict['lecID'],
             u=dbKakomonDict['url'],
-            sT=dbKakomonDict['send_time']
+            sT=dbKakomonDict['sendTime']
         )
 
     @classmethod
