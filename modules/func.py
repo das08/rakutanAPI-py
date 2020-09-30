@@ -189,12 +189,12 @@ def add_user_favorite(uid, lecID, lectureName):
         res.result = response[3405]
         return res
 
-    query = {'uid': uid, 'lecID': int(lecID), 'lectureName': lectureName}
+    query = {'uid': uid, 'lecID': int(lecID)}
 
     result = db.insert('userfav', query).result
     if result == "success":
         res.result = "success"
-        res.successMsg = response[3406].format(uid, lectureName)
+        res.successMsg = response[3406].format(uid, lecID)
     else:
         res.result = response[3002].format(uid)
 
