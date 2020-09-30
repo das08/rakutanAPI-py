@@ -169,12 +169,11 @@ def get_kakomon_merge_list():
     return res
 
 
-def add_user_favorite(uid, lecID, lectureName):
+def add_user_favorite(uid, lecID):
     """
     Add user's favorite.
     :param uid: (str) user's LINE UID
     :param lecID: (int) lecture ID
-    :param lectureName: (str) lecture name
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
     And if success -> "successMsg" will hold succcess message string.
     """
