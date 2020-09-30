@@ -5,10 +5,6 @@ from modules.DotDict import DotDict
 from modules.reserved import responseMessages as response
 
 
-def unpack(result, count, queryResult):
-    return result, count, queryResult
-
-
 def get_lecture_by_id(lecID):
     """
     Find rakutan info from lecture ID
@@ -18,8 +14,7 @@ def get_lecture_by_id(lecID):
     """
     db = DB()
     query = {'lecID': int(lecID)}
-    # result, count, queryResult = db.find('rakutan', query)
-    result, count, queryResult = unpack(**db.find('rakutan2020', query))
+    result, count, queryResult = [*db.find('rakutan2020', query).values()]
 
     res = DotDict({
         "result": None,
@@ -54,7 +49,7 @@ def get_lecture_by_search_word(search_word):
         query = {'lectureName': {'$regex': f'^{search_word}', '$options': 'i'}}
 
     # result, count, queryResult = db.find('rakutan', query, projection={'_id': False})
-    result, count, queryResult = unpack(**db.find('rakutan2020', query, projection={'_id': False}))
+    result, count, queryResult = [*db.find('rakutan2020', query, projection={'_id': False}).values()]
 
     res = DotDict({
         "result": None,
@@ -84,7 +79,7 @@ def get_user_favorite(uid):
     """
     db = DB()
     query = {'uid': uid}
-    result, count, queryResult = unpack(**db.find('userfav', query))
+    result, count, queryResult = [*db.find('userfav', query).values()]
 
     res = DotDict({
         "result": None,
@@ -121,15 +116,17 @@ def get_omikuji(omikujiType):
 
     if omikujiType == "oni":
         query = {'$and': [{'facultyName': '国際高等教育院'}, {'total.0': {'$gt': 4}},
-                          {'$expr': {'$lt': [{'$arrayElemAt': ['$accepted', 0]}, {'$multiply': [0.31, {'$arrayElemAt': ['$total', 0]}]}]}}]}
+                          {'$expr': {'$lt': [{'$arrayElemAt': ['$accepted', 0]},
+                                             {'$multiply': [0.31, {'$arrayElemAt': ['$total', 0]}]}]}}]}
     elif omikujiType == "normal":
         query = {'$and': [{'facultyName': '国際高等教育院'}, {'accepted.0': {'$gt': 15}},
-                          {'$expr': {'$gt': [{'$arrayElemAt': ['$accepted', 0]}, {'$multiply': [0.8, {'$arrayElemAt': ['$total', 0]}]}]}}]}
+                          {'$expr': {'$gt': [{'$arrayElemAt': ['$accepted', 0]},
+                                             {'$multiply': [0.8, {'$arrayElemAt': ['$total', 0]}]}]}}]}
     else:
         res.result = response[4002].format(omikujiType)
         return res
 
-    result, count, queryResult = unpack(**db.find('rakutan2020', query))
+    result, count, queryResult = [*db.find('rakutan2020', query).values()]
 
     if result == "success":
         if count == 0:
@@ -151,7 +148,7 @@ def get_kakomon_merge_list():
     """
     db = DB()
     query = {'lecID': {'$ne': ''}}
-    result, count, queryResult = unpack(**db.find('urlmerge', query))
+    result, count, queryResult = [*db.find('urlmerge', query).values()]
 
     res = DotDict({
         "result": None,
