@@ -187,6 +187,7 @@ def add_user_favorite(uid, lecID):
         "successMsg": None
     })
 
+    # Check existence
     if db.exist('userfav', {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}):
         res.result = response[3405]
         return res
@@ -218,6 +219,7 @@ def delete_user_favorite(uid, lecID):
         "successMsg": None
     })
 
+    # Check existence
     if not db.exist('userfav', {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}):
         res.result = response[3408].format(lecID)
         return res
@@ -252,6 +254,7 @@ def add_kakomon_url(uid, lecID, url):
         "successMsg": None
     })
 
+    # URL varidation
     if not re.match("https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", url):
         res.result = response[5003].format(lecID)
         return res
@@ -284,9 +287,14 @@ def delete_kakomon_url(lecID, url):
         "successMsg": None
     })
 
-    # TODO: work on existence check
-    if not db.exist('urlmerge', {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}):
-        res.result = response[3408].format(lecID)
+    # URL varidation
+    if not re.match("https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", url):
+        res.result = response[5003].format(lecID)
+        return res
+
+    # Check existence
+    if not db.exist('urlmerge', {'$and': [{'lecID': int(lecID)}, {'url': url}]}):
+        res.result = response[5407].format(lecID)
         return res
 
     query = {'$and': [{'lecID': int(lecID)}, {'url': url}]}
@@ -296,7 +304,7 @@ def delete_kakomon_url(lecID, url):
         res.result = "success"
         res.successMsg = response[5406].format(lecID, url)
     elif result == "fail":
-        res.result = response[5407].format(lecID, url)
+        res.result = response[5408].format(lecID, url)
     else:
         res.result = response[5004]
 

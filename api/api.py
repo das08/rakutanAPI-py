@@ -49,7 +49,7 @@ def add_users_favorite():
     lecID = request.json.get('lecID')
     lectureName = request.json.get('lectureName')
 
-    res = fn.add_user_favorite(uid, lecID, lectureName)
+    res = fn.add_user_favorite(uid, lecID)
     if res.result == "success":
         return res.successMsg
     else:
@@ -104,7 +104,7 @@ def add_kakomon():
 
 
 # 指定した講義ID(lecID)の過去問リンクを許可待ちリストから削除する
-@app.route('/kakomon/<lecID>', methods=['DELETE'])
+@app.route('/kakomon/<int:lecID>>', methods=['DELETE'])
 def delete_kakomon(lecID=None):
     return jsonify(lecID)
 
