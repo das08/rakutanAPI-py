@@ -92,7 +92,15 @@ def get_kakomon():
 # 指定した講義ID(lecID)の過去問リンクを許可待ちリストに追加する
 @app.route('/kakomon', methods=['POST'])
 def add_kakomon():
-    return jsonify()
+    uid = request.json.get('uid')
+    lecID = request.json.get('lecID')
+    url = request.json.get('url')
+
+    res = fn.add_kakomon_url(uid, lecID, url)
+    if res.result == "success":
+        return res.successMsg
+    else:
+        return res.result
 
 
 # 指定した講義ID(lecID)の過去問リンクを許可待ちリストから削除する

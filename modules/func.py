@@ -1,4 +1,7 @@
+import datetime
 import random
+import re
+
 from db import Database as DB
 from models import Rakutan, UserFav, Kakomon
 from modules.DotDict import DotDict
@@ -229,6 +232,73 @@ def delete_user_favorite(uid, lecID):
         res.result = response[3409].format(lecID)
     else:
         res.result = response[3003].format(uid)
+
+    return res
+
+
+def add_kakomon_url(uid, lecID, url):
+    """
+    Add kakomon url to merge list.
+    :param uid: (str) user's LINE UID
+    :param lecID: (int) lecture ID
+    :param url: (str) URL
+    :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
+    And if success -> "successMsg" will hold succcess message string.
+    """
+    db = DB()
+
+    res = DotDict({
+        "result": None,
+        "successMsg": None
+    })
+
+    if not re.match("https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", url):
+        res.result = response[5003].format(lecID)
+        return res
+
+    dates = str(datetime.datetime.now()).replace('.', '/')
+    query = {'lecID': int(lecID), 'url': url, 'uid': uid, 'sendTime': dates}
+
+    result = db.insert('urlmerge', query).result
+    if result == "success":
+        res.result = "success"
+        res.successMsg = response[5405].format(lecID)
+    else:
+        res.result = response[5002].format(uid)
+
+    return res
+
+
+def delete_kakomon_url(lecID, url):
+    """
+    Delete kakomon url from merge list.
+    :param lecID: (int) lecture ID
+    :param url: (str) url
+    :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
+    And if success -> "successMsg" will hold succcess message string.
+    """
+    db = DB()
+
+    res = DotDict({
+        "result": None,
+        "successMsg": None
+    })
+
+    # TODO: work on existence check
+    if not db.exist('urlmerge', {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}):
+        res.result = response[3408].format(lecID)
+        return res
+
+    query = {'$and': [{'lecID': int(lecID)}, {'url': url}]}
+
+    result = db.delete('urlmerge', query).result
+    if result == "success":
+        res.result = "success"
+        res.successMsg = response[5406].format(lecID, url)
+    elif result == "fail":
+        res.result = response[5407].format(lecID, url)
+    else:
+        res.result = response[5004]
 
     return res
 
