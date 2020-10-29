@@ -1,1 +1,4 @@
-# rakutan-py
+# rakutanAPI-py
+
+## Requirements
+- python==3.8.2
