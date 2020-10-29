@@ -10,7 +10,7 @@ app = Blueprint('api', __name__, url_prefix='/api')
 def get_lecture_by_id(lecID=None):
     res = fn.get_lecture_by_id(lecID)
     if res.result == "success":
-        return Rakutan.to_dict(res.rakutan)
+        return jsonify(Rakutan.to_dict(res.rakutan))
     else:
         return res.result
 
@@ -24,7 +24,7 @@ def get_lecture_by_search_word(search_word=None):
         tmp = []
         for rakutan in res.rakutanList:
             tmp.append(Rakutan.to_dict(rakutan))
-        return {"searchResult": tmp, "searchCount": res.count}
+        return jsonify({"searchResult": tmp, "searchCount": res.count})
     else:
         return res.result
 
@@ -37,7 +37,7 @@ def get_users_favorite(uid=None):
         tmp = []
         for fav in res.favList:
             tmp.append(UserFav.to_dict(fav))
-        return {"favList": tmp, "favCount": res.count}
+        return jsonify({"favList": tmp, "favCount": res.count})
     else:
         return res.result
 
@@ -49,7 +49,7 @@ def add_users_favorite():
     lecID = request.json.get('lecID')
     lectureName = request.json.get('lectureName')
 
-    res = fn.add_user_favorite(uid, lecID, lectureName)
+    res = fn.add_user_favorite(uid, lecID)
     if res.result == "success":
         return res.successMsg
     else:
@@ -71,7 +71,7 @@ def delete_users_favorite(uid=None, lecID=None):
 def get_omikuji(omikujiType=None):
     res = fn.get_omikuji(omikujiType)
     if res.result == "success":
-        return Rakutan.to_dict(res.rakutan)
+        return jsonify(Rakutan.to_dict(res.rakutan))
     else:
         return res.result
 
@@ -84,7 +84,7 @@ def get_kakomon():
         tmp = []
         for kakomon in res.kakomonList:
             tmp.append(Kakomon.to_dict(kakomon))
-        return {"kakomonList": tmp, "kakomonCount": res.count}
+        return jsonify({"kakomonList": tmp, "kakomonCount": res.count})
     else:
         return res.result
 
@@ -92,12 +92,21 @@ def get_kakomon():
 # 指定した講義ID(lecID)の過去問リンクを許可待ちリストに追加する
 @app.route('/kakomon', methods=['POST'])
 def add_kakomon():
-    return jsonify()
+    uid = request.json.get('uid')
+    lecID = request.json.get('lecID')
+    url = request.json.get('url')
+
+    res = fn.add_kakomon_url(uid, lecID, url)
+    if res.result == "success":
+        return res.successMsg
+    else:
+        return res.result
 
 
 # 指定した講義ID(lecID)の過去問リンクを許可待ちリストから削除する
-@app.route('/kakomon/<lecID>', methods=['DELETE'])
+@app.route('/kakomon/<int:lecID>', methods=['DELETE'])
 def delete_kakomon(lecID=None):
+    url = request.json.get('url')
     return jsonify(lecID)
 
 

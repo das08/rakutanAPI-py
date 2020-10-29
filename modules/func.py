@@ -1,12 +1,11 @@
+import datetime
 import random
+import re
+
 from db import Database as DB
 from models import Rakutan, UserFav, Kakomon
 from modules.DotDict import DotDict
 from modules.reserved import responseMessages as response
-
-
-def unpack(result, count, queryResult):
-    return result, count, queryResult
 
 
 def get_lecture_by_id(lecID):
@@ -17,9 +16,8 @@ def get_lecture_by_id(lecID):
     And if success -> "rakutan" will hold a Rakutan object.
     """
     db = DB()
-    query = {'id': int(lecID)}
-    # result, count, queryResult = db.find('rakutan', query)
-    result, count, queryResult = unpack(**db.find('rakutan', query))
+    query = {'lecID': int(lecID)}
+    result, count, queryResult = [*db.find('rakutan2020', query).values()]
 
     res = DotDict({
         "result": None,
@@ -49,12 +47,12 @@ def get_lecture_by_search_word(search_word):
 
     # if search word has % in first letter, partial match search will be performed
     if search_word[0] == '%':
-        query = {'lecturename': {'$regex': f'{search_word[1:]}', '$options': 'i'}}
+        query = {'lectureName': {'$regex': f'{search_word[1:]}', '$options': 'i'}}
     else:
-        query = {'lecturename': {'$regex': f'^{search_word}', '$options': 'i'}}
+        query = {'lectureName': {'$regex': f'^{search_word}', '$options': 'i'}}
 
     # result, count, queryResult = db.find('rakutan', query, projection={'_id': False})
-    result, count, queryResult = unpack(**db.find('rakutan', query, projection={'_id': False}))
+    result, count, queryResult = [*db.find('rakutan2020', query, projection={'_id': False}).values()]
 
     res = DotDict({
         "result": None,
@@ -84,7 +82,7 @@ def get_user_favorite(uid):
     """
     db = DB()
     query = {'uid': uid}
-    result, count, queryResult = unpack(**db.find('userfav', query))
+    result, count, queryResult = [*db.find('userfav', query).values()]
 
     res = DotDict({
         "result": None,
@@ -120,16 +118,18 @@ def get_omikuji(omikujiType):
     })
 
     if omikujiType == "oni":
-        query = {'$and': [{'facultyname': '国際高等教育院'}, {'total_prev': {'$gt': 4}},
-                          {'$expr': {'$lt': ['$accept_prev', {'$multiply': [0.31, '$total_prev']}]}}]}
+        query = {'$and': [{'facultyName': '国際高等教育院'}, {'total.0': {'$gt': 4}},
+                          {'$expr': {'$lt': [{'$arrayElemAt': ['$accepted', 0]},
+                                             {'$multiply': [0.31, {'$arrayElemAt': ['$total', 0]}]}]}}]}
     elif omikujiType == "normal":
-        query = {'$and': [{'facultyname': '国際高等教育院'}, {'accept_prev': {'$gt': 15}},
-                          {'$expr': {'$gt': ['$accept_prev', {'$multiply': [0.8, '$total_prev']}]}}]}
+        query = {'$and': [{'facultyName': '国際高等教育院'}, {'accepted.0': {'$gt': 15}},
+                          {'$expr': {'$gt': [{'$arrayElemAt': ['$accepted', 0]},
+                                             {'$multiply': [0.8, {'$arrayElemAt': ['$total', 0]}]}]}}]}
     else:
         res.result = response[4002].format(omikujiType)
         return res
 
-    result, count, queryResult = unpack(**db.find('rakutan', query))
+    result, count, queryResult = [*db.find('rakutan2020', query).values()]
 
     if result == "success":
         if count == 0:
@@ -150,8 +150,8 @@ def get_kakomon_merge_list():
     And if success -> "kakomonList" will hold Kakomon objects list.
     """
     db = DB()
-    query = {'search_id': {'$ne': ''}}
-    result, count, queryResult = unpack(**db.find('urlmerge', query))
+    query = {'lecID': {'$ne': ''}}
+    result, count, queryResult = [*db.find('urlmerge', query).values()]
 
     res = DotDict({
         "result": None,
@@ -172,12 +172,11 @@ def get_kakomon_merge_list():
     return res
 
 
-def add_user_favorite(uid, lecID, lectureName):
+def add_user_favorite(uid, lecID):
     """
     Add user's favorite.
     :param uid: (str) user's LINE UID
     :param lecID: (int) lecture ID
-    :param lectureName: (str) lecture name
     :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
     And if success -> "successMsg" will hold succcess message string.
     """
@@ -188,16 +187,17 @@ def add_user_favorite(uid, lecID, lectureName):
         "successMsg": None
     })
 
-    if db.exist('userfav', {'$and': [{'uid': uid}, {'lectureid': int(lecID)}]}):
+    # Check existence
+    if db.exist('userfav', {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}):
         res.result = response[3405]
         return res
 
-    query = {'uid': uid, 'lectureid': int(lecID), 'lecturename': lectureName}
+    query = {'uid': uid, 'lecID': int(lecID)}
 
     result = db.insert('userfav', query).result
     if result == "success":
         res.result = "success"
-        res.successMsg = response[3406].format(uid, lectureName)
+        res.successMsg = response[3406].format(uid, lecID)
     else:
         res.result = response[3002].format(uid)
 
@@ -219,11 +219,12 @@ def delete_user_favorite(uid, lecID):
         "successMsg": None
     })
 
-    if not db.exist('userfav', {'$and': [{'uid': uid}, {'lectureid': int(lecID)}]}):
+    # Check existence
+    if not db.exist('userfav', {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}):
         res.result = response[3408].format(lecID)
         return res
 
-    query = {'$and': [{'uid': uid}, {'lectureid': int(lecID)}]}
+    query = {'$and': [{'uid': uid}, {'lecID': int(lecID)}]}
 
     result = db.delete('userfav', query).result
     if result == "success":
@@ -233,6 +234,79 @@ def delete_user_favorite(uid, lecID):
         res.result = response[3409].format(lecID)
     else:
         res.result = response[3003].format(uid)
+
+    return res
+
+
+def add_kakomon_url(uid, lecID, url):
+    """
+    Add kakomon url to merge list.
+    :param uid: (str) user's LINE UID
+    :param lecID: (int) lecture ID
+    :param url: (str) URL
+    :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
+    And if success -> "successMsg" will hold succcess message string.
+    """
+    db = DB()
+
+    res = DotDict({
+        "result": None,
+        "successMsg": None
+    })
+
+    # URL varidation
+    if not re.match("https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", url):
+        res.result = response[5003].format(lecID)
+        return res
+
+    dates = str(datetime.datetime.now()).replace('.', '/')
+    query = {'lecID': int(lecID), 'url': url, 'uid': uid, 'sendTime': dates}
+
+    result = db.insert('urlmerge', query).result
+    if result == "success":
+        res.result = "success"
+        res.successMsg = response[5405].format(lecID)
+    else:
+        res.result = response[5002].format(uid)
+
+    return res
+
+
+def delete_kakomon_url(lecID, url):
+    """
+    Delete kakomon url from merge list.
+    :param lecID: (int) lecture ID
+    :param url: (str) url
+    :return: (dict) if success -> "result" would be "success" otherwise error message will be placed here.
+    And if success -> "successMsg" will hold succcess message string.
+    """
+    db = DB()
+
+    res = DotDict({
+        "result": None,
+        "successMsg": None
+    })
+
+    # URL varidation
+    if not re.match("https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", url):
+        res.result = response[5003].format(lecID)
+        return res
+
+    # Check existence
+    if not db.exist('urlmerge', {'$and': [{'lecID': int(lecID)}, {'url': url}]}):
+        res.result = response[5407].format(lecID)
+        return res
+
+    query = {'$and': [{'lecID': int(lecID)}, {'url': url}]}
+
+    result = db.delete('urlmerge', query).result
+    if result == "success":
+        res.result = "success"
+        res.successMsg = response[5406].format(lecID, url)
+    elif result == "fail":
+        res.result = response[5408].format(lecID, url)
+    else:
+        res.result = response[5004]
 
     return res
 
