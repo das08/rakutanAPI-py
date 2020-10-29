@@ -1,34 +1,28 @@
-class Rakutan:
-    lecID = None
-    facultyName = None
-    lectureName = None
-    groups = None
-    credits = None
-    accepted = []
-    total = []
-    url = None
+from dataclasses import dataclass
 
-    def __init__(self, lecID, fN, lN, g, c, a, t, u):
-        self.lecID: int = lecID
-        self.facultyName: str = fN
-        self.lectureName: str = lN
-        self.groups: str = g
-        self.credits: str = c
-        self.accepted: list = a
-        self.total: list = t
-        self.url: str = u
+
+@dataclass
+class Rakutan:
+    lecID: int
+    facultyName: str
+    lectureName: str
+    groups: str
+    credits: str
+    accepted: list
+    total: list
+    url: str
 
     @classmethod
     def from_dict(cls, dbRakutanDict: dict):
         return Rakutan(
             lecID=dbRakutanDict['lecID'],
-            fN=dbRakutanDict['facultyName'],
-            lN=dbRakutanDict['lectureName'],
-            g=dbRakutanDict['groups'],
-            c=dbRakutanDict['credits'],
-            a=dbRakutanDict['accepted'],
-            t=dbRakutanDict['total'],
-            u=dbRakutanDict['url']
+            facultyName=dbRakutanDict['facultyName'],
+            lectureName=dbRakutanDict['lectureName'],
+            groups=dbRakutanDict['groups'],
+            credits=dbRakutanDict['credits'],
+            accepted=dbRakutanDict['accepted'],
+            total=dbRakutanDict['total'],
+            url=dbRakutanDict['url']
         )
 
     @classmethod
@@ -51,13 +45,10 @@ class Rakutan:
         }
 
 
+@dataclass
 class UserFav:
-    uid = None
-    lecID = None
-
-    def __init__(self, uid, lecID):
-        self.uid: str = uid
-        self.lecID: int = lecID
+    uid: str
+    lecID: int
 
     @classmethod
     def from_dict(cls, dbUserFavDict: dict):
@@ -80,25 +71,20 @@ class UserFav:
         }
 
 
+@dataclass
 class Kakomon:
-    uid = None
-    lecID = None
-    url = None
-    sendTime = None
-
-    def __init__(self, uid, lecID, u, sT):
-        self.uid: str = uid
-        self.lecID: int = lecID
-        self.url: str = u
-        self.sendTime: str = sT
+    uid: str
+    lecID: int
+    url: str
+    sendTime: str
 
     @classmethod
     def from_dict(cls, dbKakomonDict: dict):
         return Kakomon(
             uid=dbKakomonDict['uid'],
             lecID=dbKakomonDict['lecID'],
-            u=dbKakomonDict['url'],
-            sT=dbKakomonDict['sendTime']
+            url=dbKakomonDict['url'],
+            sendTime=dbKakomonDict['sendTime']
         )
 
     @classmethod
