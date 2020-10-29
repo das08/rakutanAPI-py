@@ -104,8 +104,9 @@ def add_kakomon():
 
 
 # 指定した講義ID(lecID)の過去問リンクを許可待ちリストから削除する
-@app.route('/kakomon/<int:lecID>>', methods=['DELETE'])
+@app.route('/kakomon/<int:lecID>', methods=['DELETE'])
 def delete_kakomon(lecID=None):
+    url = request.json.get('url')
     return jsonify(lecID)
 
 
